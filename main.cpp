@@ -174,6 +174,8 @@ int main(int argc, char* argv[]) {
     outfile.close();
   #endif
 
+    std::cout << "dx: " << dx << std::endl;
+
     std::ofstream of("vox_out.txt");
     for (int i = 0; i < phi_grid.ni-1; ++i)
     {
@@ -184,12 +186,22 @@ int main(int argc, char* argv[]) {
                 // Check the vertices of this voxel
 
                 bool solid = false;
+                int numLess = 0;
                 for (int i1 = i; i1 <= i+1; ++i1)
+                {
                     for (int j1 = j; j1 <= j+1; ++j1)
+                    {
                         for (int k1 = k; k1 <= k+1; ++k1)
-                            solid = solid || (phi_grid(i1,j1,k1) <= -0.00001);
+                        {
+                            //solid = solid || (phi_grid(i1,j1,k1) <= -1e-12);
+                            //solid = solid || (phi_grid(i1,j1,k1) <= 0);
 
-                of << (solid ? 1:0) << " ";
+                            numLess += (phi_grid(i1,j1,k1) < dx ? 1 : 0);
+                        }
+                    }
+                }
+
+                of << ( (solid || numLess == 8) ? 1:0) << " ";
             }
             of << "\n";
         }
